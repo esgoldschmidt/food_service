@@ -2,33 +2,32 @@
 
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-
 interface InputProps {
   isEditing: boolean;
   itemToEditTitle: string;
 }
 
 const Input = ({ isEditing, itemToEditTitle }: InputProps) => {
-  const [todoValue, setTodoValue] = useState("");
+  const [todoTitle, setTodoTitle] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (isEditing) {
-      setTodoValue(itemToEditTitle);
+      setTodoTitle(itemToEditTitle);
     }
   }, [isEditing, itemToEditTitle]);
 
   const createTodo = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!todoValue) {
+    if (!todoTitle) {
       alert("Please enter a value");
       return;
     }
     setIsLoading(true);
     // Todo: post to the db
-    console.log("todo created", todoValue);
+    console.log("todo created", todoTitle);
     toast.success("Todo created");
-    setTodoValue("");
+    setTodoTitle("");
     setIsLoading(false);
   };
 
@@ -42,12 +41,12 @@ const Input = ({ isEditing, itemToEditTitle }: InputProps) => {
         className=" py-2 px-4 w-full outline-none "
         type="text"
         placeholder="Create todo..."
-        value={todoValue}
-        onChange={(e) => setTodoValue(e.target.value)}
+        value={todoTitle}
+        onChange={(e) => setTodoTitle(e.target.value)}
       />
       <button
         className={`rounded-r-sm w-24 text-white bg-slate-500/75 font-bold hover:bg-slate-500 ${
-          todoValue && "bg-slate-500"
+          todoTitle && "bg-slate-500"
         }`}
         type="submit"
         disabled={isLoading}
