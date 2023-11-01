@@ -1,4 +1,4 @@
-# Full Stack Todo Application with Prisma ORM and MongoDB starter code
+# Full Stack Todo Application with Prisma ORM and MongoDB - Starter code
 
 In this README, I will provide a detailed overview of what you'll be building and how to get started.
 
