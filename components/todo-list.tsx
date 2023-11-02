@@ -6,15 +6,15 @@ interface TodoListProps {
 
 const TodoList = ({ handleEdit }: TodoListProps) => {
   // fetch todo
-  const todo = [
+  const todos = [
     { title: "Drink Water", id: "1" },
     { title: "Have some rest", id: "2" },
     ,
     { title: "Take a walk", id: "3" },
   ];
-  return (
+  return todos.length > 1 ? (
     <ul className="w-full rounded-sm border p-3 space-y-2">
-      {todo.map((todo) => (
+      {todos.map((todo) => (
         <TodoItem
           key={todo?.id}
           title={todo?.title!}
@@ -23,6 +23,8 @@ const TodoList = ({ handleEdit }: TodoListProps) => {
         />
       ))}
     </ul>
+  ) : (
+    []
   );
 };
 
