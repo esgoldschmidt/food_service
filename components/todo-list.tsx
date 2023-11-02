@@ -5,7 +5,17 @@ interface TodoListProps {
 }
 
 const TodoList = ({ handleEdit }: TodoListProps) => {
-  // fetch todo
+  //  useEffect(() => {
+  //    const fetchTodos = async () => {
+
+  //     fetch todo
+
+  //    };
+
+  //    call fetchTodos
+
+  //  }, []);
+
   const todos = [
     { title: "Drink Water", id: "1" },
     { title: "Have some rest", id: "2" },
