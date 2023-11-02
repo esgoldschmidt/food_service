@@ -17,10 +17,10 @@ const TodoList = ({ handleEdit }: TodoListProps) => {
   //  }, []);
 
   const todos = [
-    { title: "Drink Water", id: "1" },
-    { title: "Have some rest", id: "2" },
+    { title: "Drink Water", id: "1", isCompleted: false },
+    { title: "Have some rest", id: "2", isCompleted: false },
     ,
-    { title: "Take a walk", id: "3" },
+    { title: "Take a walk", id: "3", isCompleted: true },
   ];
   return todos.length > 0 ? (
     <ul className="w-full rounded-sm border p-3 space-y-2">
@@ -28,6 +28,7 @@ const TodoList = ({ handleEdit }: TodoListProps) => {
         <TodoItem
           key={todo?.id}
           title={todo?.title!}
+          isCompleted={todo?.isCompleted!}
           id={todo?.id!}
           handleEdit={handleEdit}
         />
