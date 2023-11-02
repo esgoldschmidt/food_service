@@ -4,18 +4,18 @@ import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 interface InputProps {
   isEditing: boolean;
-  itemToEditTitle: string;
+  itemToEdit: { id: string; title: string };
 }
 
-const Input = ({ isEditing, itemToEditTitle }: InputProps) => {
+const Input = ({ isEditing, itemToEdit }: InputProps) => {
   const [todoTitle, setTodoTitle] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (isEditing) {
-      setTodoTitle(itemToEditTitle);
+      setTodoTitle(itemToEdit.title);
     }
-  }, [isEditing, itemToEditTitle]);
+  }, [isEditing, itemToEdit.title]);
 
   const createTodo = (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,7 +51,7 @@ const Input = ({ isEditing, itemToEditTitle }: InputProps) => {
         type="submit"
         disabled={isLoading}
       >
-        {isEditing ? "Edit" : "Add"}
+        {isLoading ? "loading" : isEditing ? "Edit" : "Add"}
       </button>
     </form>
   );
