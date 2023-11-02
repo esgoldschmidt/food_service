@@ -8,7 +8,7 @@ const TodoList = ({ handleEdit }: TodoListProps) => {
   //  useEffect(() => {
   //    const fetchTodos = async () => {
 
-  //     fetch todo
+  //     fetch todos
 
   //    };
 
