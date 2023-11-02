@@ -1,3 +1,4 @@
+import { formatDate } from "./providers/format-date";
 import TodoItem from "./todo-item";
 
 interface TodoListProps {
@@ -17,22 +18,41 @@ const TodoList = ({ handleEdit }: TodoListProps) => {
   //  }, []);
 
   const todos = [
-    { title: "Drink Water", id: "1", isCompleted: false },
-    { title: "Have some rest", id: "2", isCompleted: false },
+    {
+      title: "Drink Water",
+      id: "1",
+      isCompleted: false,
+      updatedAt: new Date(),
+    },
+    {
+      title: "Have some rest",
+      id: "2",
+      isCompleted: false,
+      updatedAt: new Date(),
+    },
     ,
-    { title: "Take a walk", id: "3", isCompleted: true },
+    {
+      title: "Take a walk",
+      id: "3",
+      isCompleted: true,
+      updatedAt: new Date(),
+    },
   ];
   return todos.length > 0 ? (
     <ul className="w-full rounded-sm border p-3 space-y-2">
-      {todos.map((todo) => (
-        <TodoItem
-          key={todo?.id}
-          title={todo?.title!}
-          isCompleted={todo?.isCompleted!}
-          id={todo?.id!}
-          handleEdit={handleEdit}
-        />
-      ))}
+      {todos.map((todo) => {
+        const updatedDate = formatDate(todo?.updatedAt!);
+        return (
+          <TodoItem
+            key={todo?.id}
+            title={todo?.title!}
+            isCompleted={todo?.isCompleted!}
+            id={todo?.id!}
+            updatedAt={updatedDate}
+            handleEdit={handleEdit}
+          />
+        );
+      })}
     </ul>
   ) : (
     []

@@ -4,10 +4,17 @@ interface TodoItemProps {
   title: string;
   id: string;
   isCompleted: boolean;
+  updatedAt: string;
   handleEdit: ({ title, id }: { title: string; id: string }) => void;
 }
 
-const TodoItem = ({ title, id, isCompleted, handleEdit }: TodoItemProps) => {
+const TodoItem = ({
+  title,
+  id,
+  isCompleted,
+  updatedAt,
+  handleEdit,
+}: TodoItemProps) => {
   const completeTodo = () => {
     alert("task completed");
   };
@@ -29,7 +36,9 @@ const TodoItem = ({ title, id, isCompleted, handleEdit }: TodoItemProps) => {
       {title}
       <div className="ml-auto flex space-x-6">
         {isCompleted && (
-          <p className="text-slate-600 text-xs italic">completed</p>
+          <p className="text-slate-600 text-xs italic font-bold">
+            completed on {updatedAt}
+          </p>
         )}
         {!isCompleted && (
           <button onClick={editTask} className="px-1">
