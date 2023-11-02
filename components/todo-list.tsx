@@ -12,7 +12,7 @@ const TodoList = ({ handleEdit }: TodoListProps) => {
     ,
     { title: "Take a walk", id: "3" },
   ];
-  return todos.length > 1 ? (
+  return todos.length > 0 ? (
     <ul className="w-full rounded-sm border p-3 space-y-2">
       {todos.map((todo) => (
         <TodoItem
