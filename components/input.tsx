@@ -51,7 +51,7 @@ const Input = ({ isEditing, itemToEdit }: InputProps) => {
         type="submit"
         disabled={isLoading}
       >
-        {isLoading ? "loading" : isEditing ? "Edit" : "Add"}
+        {isLoading ? "..." : isEditing ? "Edit" : "Add"}
       </button>
     </form>
   );
