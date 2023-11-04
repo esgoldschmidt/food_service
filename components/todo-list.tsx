@@ -1,4 +1,4 @@
-import { formatDate } from "./providers/format-date";
+import { formatDate } from "../lib/format-date";
 import TodoItem from "./todo-item";
 
 interface TodoListProps {
