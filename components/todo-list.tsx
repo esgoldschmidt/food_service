@@ -1,53 +1,54 @@
+import { useEffect, useState } from "react";
 import { formatDate } from "../lib/format-date";
 import TodoItem from "./todo-item";
+import toast from "react-hot-toast";
 
 interface TodoListProps {
   handleEdit: ({ title, id }: { title: string; id: string }) => void;
 }
 
+interface Todo {
+  title: string;
+  id: string;
+  isCompleted: boolean;
+  updatedAt: string | Date;
+}
+
 const TodoList = ({ handleEdit }: TodoListProps) => {
-  //  useEffect(() => {
-  //    const fetchTodos = async () => {
+  const [todos, setTodos] = useState<Todo[]>([]); // ✅ using todos, not todo
 
-  //     fetch todos
+  useEffect(() => {
+    const fetchTodos = async () => {
+      try {
+        const response = await fetch(`/api/todo`, {
+          next: { revalidate: 3600 },
+        });
 
-  //    };
+        if (!response.ok) {
+          throw new Error(`Failed to fetch items: ${response.status}`);
+        }
 
-  //    call fetchTodos
+        const data = await response.json();
+        setTodos(data); // ✅ update the todos state
+      } catch (error: any) {
+        console.error(`Error fetching items: ${error.message}`);
+        toast.error("Unable to fetch todos at this time");
+      }
+    };
 
-  //  }, []);
+    fetchTodos();
+  }, []);
 
-  const todos = [
-    {
-      title: "Drink Water",
-      id: "1",
-      isCompleted: false,
-      updatedAt: new Date(),
-    },
-    {
-      title: "Have some rest",
-      id: "2",
-      isCompleted: false,
-      updatedAt: new Date(),
-    },
-    ,
-    {
-      title: "Take a walk",
-      id: "3",
-      isCompleted: true,
-      updatedAt: new Date(),
-    },
-  ];
   return todos.length > 0 ? (
     <ul className="w-full rounded-sm border p-3 space-y-2">
       {todos.map((todo) => {
-        const updatedDate = formatDate(todo?.updatedAt!);
+        const updatedDate = formatDate(new Date(todo.updatedAt));
         return (
           <TodoItem
-            key={todo?.id}
-            title={todo?.title!}
-            isCompleted={todo?.isCompleted!}
-            id={todo?.id!}
+            key={todo.id}
+            title={todo.title}
+            isCompleted={todo.isCompleted}
+            id={todo.id}
             updatedAt={updatedDate}
             handleEdit={handleEdit}
           />
@@ -55,7 +56,7 @@ const TodoList = ({ handleEdit }: TodoListProps) => {
       })}
     </ul>
   ) : (
-    []
+    <div className="text-gray-500 text-center py-4">No todos yet.</div>
   );
 };
 
