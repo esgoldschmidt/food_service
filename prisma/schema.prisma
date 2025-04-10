@@ -16,10 +16,288 @@ datasource db {
   relationMode = "prisma"
 }
 
+model Account {
+  id                String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String  @db.ObjectId // Goldylocks User
+  user_id           Int?  // Outside App User
+  type              String 
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.String 
+  oauth_token_secret String? @db.String
+  access_token      String? @db.String 
+  oauth_token       String? @db.String
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.String  
+  session_state     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+ 
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+ 
+  // permissions Permission[]
+
+  @@unique([provider, providerAccountId])
+}
+
+
+model AccountNumber {
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  vendorId    String  @db.ObjectId
+  venueId  String  @db.ObjectId
+  account     String
+
+  // Relations
+  vendor   Vendor   @relation(fields: [vendorId], references: [id])
+  venue Venue @relation(fields: [venueId], references: [id])
+
+  @@unique([vendorId, venueId]) // prevent duplicate entries
+}
+
+model Bookmark {
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId              String   @db.ObjectId  
+  visualDataId        String   @db.ObjectId
+  entityType          String   // venue | room
+  entityId            String   @db.ObjectId
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relations
+  media         Media?   @relation(fields: [visualDataId], references: [id])
+  venue         Venue?   @relation(fields: [entityId], references: [id])
+  room          Room?       @relation(fields: [entityId], references: [id])
+  user          User   @relation(fields: [userId], references: [id])  // Updated reference
+}
+
+model Like {
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId              String   @db.ObjectId  
+  visualDataId        String   @db.ObjectId
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relations
+  media    Media?   @relation(fields: [visualDataId], references: [id], onDelete: Cascade)
+  user                User   @relation(fields: [userId], references: [id])  // Updated reference
+}
+
+model Media{
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  url           String?                 // if image
+  apiVideoId    String?                 // if video
+  type          String                  // 'image' or 'video'
+  entityType    String                  // 'building', 'apartment', 'room'
+  entityId      String   @db.ObjectId   //(actual) buildingId, apartmentId, roomId
+  userId        String  @db.ObjectId
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  likes       Like[]      
+  bookmarks   Bookmark[]
+  venue       Venue?   @relation(fields: [entityId], references: [id])
+  room        Room?       @relation(fields: [entityId], references: [id])
+  user        User        @relation(fields: [userId], references: [id])
+}
+
+model Message {
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
+  senderId            String   @db.ObjectId
+  recipientId         String   @db.ObjectId
+  message             String?
+  entityType          String?
+  entityId            String?  @db.ObjectId
+  mediaId             String?  @db.ObjectId
+  readAt              DateTime?
+  notifiedAt          DateTime?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relations
+  sender              User   @relation("messagesSent", fields: [senderId], references: [id])  // Updated reference
+  recipient           User   @relation("messagesReceived", fields: [recipientId], references: [id])  // Updated reference
+
+  // Conditional relations
+  venue           Venue? @relation(fields: [entityId], references: [id])
+  room           Room? @relation(fields: [entityId], references: [id])
+}
+
+
+
+// user notification status
+model Notification {
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId              String   @db.ObjectId  // Renamed from personId
+  notification        String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relations
+  user                User   @relation(fields: [userId], references: [id])  // Updated reference
+}
+
+model RateLimit {
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
+  typeFeature         String                  // 'building', 'apartment', 'room', 'user'
+  typeId              String   @db.ObjectId   //(actual) buildingId, apartmentId, roomId, userId
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  venue       Venue?   @relation(fields: [typeId], references: [id]) 
+  room        Room?       @relation(fields: [typeId], references: [id])
+}
+
+model Room {
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
+  venueId             String   @db.ObjectId
+  roomName            String
+  floor               Int?       
+  description         String?   
+  squareFootage       Int?     
+  status              String?
+  isQuarantined       Boolean  @default(false)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relations
+  venue               Venue @relation(fields: [venueId], references: [id])
+  media               Media[]
+  bookmarks           Bookmark[]
+  rateLimit           RateLimit[]
+  messages            Message[]
+}
+
+model Session {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  sessionToken String   @unique
+  userId       String   @db.ObjectId
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+ 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Todo {
   id String @id @default(auto()) @map("_id") @db.ObjectId
   title     String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   isCompleted    Boolean? @default(false)
+}
+
+model User {
+  id                   String   @id @default(auto()) @map("_id") @db.ObjectId
+  handle               String?  
+  name                 String? 
+  nickname             String?
+  email                String?   @unique
+  emailVerified        DateTime?
+  emailPending         String? 
+  timeLinkSent         DateTime?
+  timeVerified         DateTime?
+  mobilePhone          String?  
+  mobilePending        String?
+  mobilePhoneVerified  DateTime?
+  image                String?
+  bio                  String?
+  timeLastMessageRead  DateTime?
+  verifiedAt           DateTime?
+  isAdmin              Boolean @default(false)
+  isActive             Boolean @default(true)     // when false, account is suspended
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  // Relations
+  media                Media[]
+  sessions             Session[]
+  venues               Venue[]
+  notifications        Notification[]
+  likes                Like[]
+  messagesSent         Message[] @relation("messagesSent")
+  messagesReceived     Message[] @relation("messagesReceived")
+  bookmarks            Bookmark[]
+  accounts             Account[]
+}
+
+
+
+model Venue {
+  id                  String     @id @default(auto()) @map("_id") @db.ObjectId
+  ownerId             String     @db.ObjectId
+  entityId            String?    @db.ObjectId // corp or llc info
+  display_name        String?
+  normalized_display_name String?
+  house_number        String?
+  road                String?
+  suburb              String?  // borough 
+  location            String?  // city | town | village
+  state               String?
+  country             String?
+  country_code        String?
+  postcode            String?
+  crossStreet         String?
+  neighborhood        String?
+  lat                 String?
+  lon                 String?
+  type                String?
+  place_rank          Int?
+  importance          Float?
+  yearConstructed     Int? 
+  buildingtype        String? // condo | multiunit home | co-op | apartment complex
+  num_floors          Int?
+  website             String?
+  description         String?
+  likes               Int?
+  status              String?
+  isQuarantined       Boolean  @default(false)
+  boundingbox         Json?
+  prettyUrl           String
+  verifiedAt          DateTime? 
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relations
+  owner               User   @relation(fields: [ownerId], references: [id])
+  accountNumbers      AccountNumber[]
+  media               Media[]
+  bookmarks           Bookmark[]
+  rooms               Room[]
+  rateLimit           RateLimit[]
+  messages            Message[]
+
+}
+
+model Vendor {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  name             String
+  category         String
+  contactName      String
+  phone            String
+  email1           String?
+  email2           String?
+  email3           String?
+  email4           String?
+  isPaidByCC       Boolean? @default(false)
+  orders           Order[]
+
+  accountNumbers AccountNumber[]
+}
+
+model Order {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  deliveryDate DateTime
+  location    String
+  recipient   String
+  vendorId    String @db.ObjectId
+  count       Int
+  unit        String
+  product     String
+  label       String?
+  status      String
+  vendor      Vendor   @relation(fields: [vendorId], references: [id])
 }
